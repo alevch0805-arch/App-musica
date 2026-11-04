@@ -6,7 +6,7 @@ import { MetronomePanel } from '../components/MetronomePanel';
 import { VideoSync, type VideoSyncHandle } from '../components/VideoSync';
 import { deleteCustomHymn, loadHymnPrefs, publishSync, saveHymnPrefs, useLibrary, type HymnPrefs } from '../data/repo';
 import { nextSunday } from './Setlists';
-import { addToSetlist, createSetlist, updateSetlist, useSetlists } from '../data/setlists';
+import { addToSetlist, canEdit, createSetlist, updateSetlist, useSetlists } from '../data/setlists';
 import { useAuth } from '../lib/auth';
 import { useSettings } from '../lib/settings';
 import { load, save } from '../lib/storage';
@@ -58,9 +58,13 @@ function HymnView({ hymnId, listId, pos }: { hymnId: string; listId: string | nu
   const setlists = useSetlists();
   const setlist = listId ? setlists.find((l) => l.id === listId) : undefined;
   const item = setlist?.items[pos]?.hymnId === hymnId ? setlist.items[pos] : undefined;
-  const transpose = item ? item.transpose : prefs.transpose;
+  // En una lista ajena (sólo lectura) el cambio de tono es temporal, sólo en esta pantalla.
+  const [tempTranspose, setTempTranspose] = useState<number | null>(null);
+  const listEditable = !!setlist && canEdit(setlist);
+  const transpose = tempTranspose ?? (item ? item.transpose : prefs.transpose);
   const setTranspose = (n: number) => {
-    if (item && setlist) updateSetlist(setlist.id, (l) => ({ ...l, items: l.items.map((x, j) => (j === pos ? { ...x, transpose: n } : x)) }));
+    if (item && setlist && !listEditable) setTempTranspose(n);
+    else if (item && setlist) updateSetlist(setlist.id, (l) => ({ ...l, items: l.items.map((x, j) => (j === pos ? { ...x, transpose: n } : x)) }));
     else setTranspose(n);
   };
   const goTo = useCallback((i: number) => {

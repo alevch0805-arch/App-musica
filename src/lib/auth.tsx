@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from './supabase';
 import { getDeviceId, getDeviceName } from './device';
+import { setSyncUser } from '../data/setlists';
 
 export type AuthStatus = 'loading' | 'demo' | 'signedOut' | 'deviceLimit' | 'ready' | 'error';
 
@@ -48,6 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!supabase) return;
     setSession(s);
     if (!s) {
+      setSyncUser(null);
       setProfile(null);
       setStatus('signedOut');
       return;
@@ -66,7 +68,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
     const { data } = await supabase.from('profiles').select('*').eq('id', s.user.id).maybeSingle();
-    setProfile((data as Profile) ?? null);
+    const p = (data as Profile) ?? null;
+    setProfile(p);
+    setSyncUser({ id: s.user.id, name: p?.display_name || s.user.email || 'Usuario', isAdmin: !!p?.is_admin });
     setError(null);
     setStatus('ready');
   }, []);

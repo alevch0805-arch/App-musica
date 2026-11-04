@@ -255,3 +255,9 @@ label.check input { width: auto; min-height: 0; }
 .user.blocked { opacity: .7; }
 .user .chip { margin-left: 6px; }
 .user-detail { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 6px; }
+.share-toggle { margin: 12px 0 0; font-size: .9rem; }
+.sync { margin: 8px 0 0; font-size: .85rem; color: var(--muted); }
+.sync.synced { color: var(--ok); }
+.sync.error { color: var(--accent); }
+.chip.shared { margin-left: 8px; font-size: .75rem; }
+input:disabled, select:disabled { opacity: .75; }

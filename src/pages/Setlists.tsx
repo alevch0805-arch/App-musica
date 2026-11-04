@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { createSetlist, sortSetlists, useSetlists } from '../data/setlists';
+import { createSetlist, isMine, sortSetlists, useSetlists } from '../data/setlists';
 
 export function nextSunday(from = new Date()): string {
   const d = new Date(from);
@@ -37,7 +37,10 @@ export function Setlists() {
           <li key={s.id} className={s.date && s.date < today ? 'past' : ''}>
             <Link to={`/listas/${s.id}`}>
               <span className="date">{s.date ? fmtDay(s.date) : '—'}</span>
-              <span className="title">{s.name}</span>
+              <span className="title">
+                {s.name}
+                {s.shared && <span className="chip shared">{isMine(s) ? 'compartida' : `de ${s.ownerName ?? 'otro usuario'}`}</span>}
+              </span>
               <span className="hymnal">{s.items.length} himno{s.items.length === 1 ? '' : 's'}</span>
             </Link>
           </li>

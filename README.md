@@ -17,7 +17,7 @@ invitación y cada cuenta sólo puede usarse en **2 dispositivos**.
 | Notación | Americana (C D E) o latina (Do Re Mi), a elección de cada usuario. |
 | Vídeo | Reproductor oficial de YouTube. **Sincronización a toques**: mientras suena, pulsas «Marcar» (o la barra espaciadora) en cada cambio de acorde. Luego, al reproducir, resalta el acorde actual, muestra su diagrama y los siguientes, y hace scroll solo. Tocar un acorde salta a ese punto del vídeo. Velocidad 0.5×–1.25× y ajuste fino del desfase. |
 | Publicar sincronización | El administrador sincroniza un vídeo una vez y lo publica para todos. |
-| Listas para el culto | Himnos en orden, cada uno en su tono para ese día, con notas («sólo estrofas 1 y 3»). Se toca pasando de un himno a otro con flechas o pedal; se comparte por WhatsApp. |
+| Listas para el culto | Himnos en orden, cada uno en su tono para ese día, con notas («sólo estrofas 1 y 3»). Se toca pasando de un himno a otro con flechas o pedal; se envía por WhatsApp. Se guardan en la nube y funcionan sin conexión. Una lista **compartida** la ven todos los usuarios (sólo lectura, pueden copiarla); el administrador puede editar las compartidas. |
 | Modo proyector | Sólo la letra, en grande, una estrofa por pantalla. Avanza con flechas, espacio, mando de presentación o tocando la pantalla; tecla B = pantalla en negro; pasa solo al siguiente himno de la lista. |
 | Metrónomo | Usa el tempo y el compás del himno (3/4, 6/8…), acento en el primer tiempo, ajuste ±1 y «Tap» para marcar el tempo tocando. Recuerda el tempo elegido para cada himno. |
 | Cantos propios | Editor con vista previa; convierte el formato «acordes encima de la letra» a ChordPro. |
@@ -40,8 +40,8 @@ dominio público (`himnarios/demo/`).
 ## Activar cuentas y el límite de 2 dispositivos
 
 1. Crea un proyecto gratuito en [supabase.com](https://supabase.com).
-2. En *SQL Editor* ejecuta, en orden, `supabase/migrations/001_inicial.sql` y
-   `supabase/migrations/002_admin.sql`.
+2. En *SQL Editor* ejecuta, en orden, `supabase/migrations/001_inicial.sql`,
+   `supabase/migrations/002_admin.sql` y `supabase/migrations/003_listas.sql`.
 3. Copia `.env.example` a `.env` y pon la *Project URL* y la *anon key*.
 4. Crea **tu** primera invitación por SQL (las demás, desde el panel *Admin* de la app):
    ```sql

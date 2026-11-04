@@ -78,6 +78,32 @@ select pg_temp.as_user('00000000-0000-0000-0000-00000000000b', 'portatil-ana-3')
 do $$ begin assert (select count(*) from hymns) = 0, 'bloqueada no ve himnos'; end $$;
 select pg_temp.expect_error($$select register_device('portatil-ana-3', 'Windows')$$, 'BLOCKED');
 
+-- Listas compartidas
+reset role;
+update profiles set blocked = false where email = 'ana@x.com';
+insert into auth.users (id, email, raw_user_meta_data) values ('00000000-0000-0000-0000-00000000000c', 'luis@x.com', '{"invite_code":"NUEVO-123"}');
+set role authenticated;
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000b', 'portatil-ana-3');
+select register_device('portatil-ana-3', 'Windows');
+insert into setlists (id, name, items) values ('ana-privada', 'Ensayo', '[{"hymnId":"h-1","transpose":2}]');
+insert into setlists (id, name, shared) values ('ana-domingo', 'Domingo', true);
+select pg_temp.expect_error($$insert into setlists (id, owner_id, name) values ('falsa', '00000000-0000-0000-0000-00000000000c', 'X')$$, 'row-level security');
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000c', 'movil-luis-1');
+do $$ begin assert (select count(*) from setlists) = 0, 'sin dispositivo no ve listas'; end $$;
+select register_device('movil-luis-1', 'Android');
+do $$ begin assert (select array_agg(id) from setlists) = array['ana-domingo'], 'Luis sólo ve la compartida'; end $$;
+update setlists set name = 'Hackeada' where id = 'ana-domingo';
+delete from setlists where id = 'ana-domingo';
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000b', 'portatil-ana-3');
+do $$ begin assert (select name from setlists where id = 'ana-domingo') = 'Domingo', 'Luis no puede editar ni borrar'; end $$;
+update setlists set owner_id = '00000000-0000-0000-0000-00000000000c', name = 'Domingo 2' where id = 'ana-domingo';
+do $$ begin assert (select owner_id from setlists where id = 'ana-domingo') = '00000000-0000-0000-0000-00000000000b', 'el dueño no cambia'; end $$;
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a', 'pc-admin-1');
+update setlists set name = 'Domingo (admin)' where id = 'ana-domingo';
+do $$ begin assert (select name from setlists where id = 'ana-domingo') = 'Domingo (admin)', 'admin edita compartidas'; end $$;
+update setlists set name = 'X' where id = 'ana-privada';
+do $$ begin assert (select name from setlists where id = 'ana-privada') = 'Ensayo', 'admin no edita privadas'; end $$;
+
 reset role;
 \o
 \echo 'OK: todas las pruebas de base de datos pasaron'
