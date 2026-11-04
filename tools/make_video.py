@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Convierte media/kametra.m4a en un video MP4 karaoke.
 
-Uso:  python3 tools/make_video.py [audio] [letra.lrc] [salida.mp4]
+Uso:  python3 tools/make_video.py [audio] [letra.lrc] [salida.mp4] [título]
 Por defecto: media/kametra.m4a  media/kametra.lrc  media/kametra_karaoke.mp4
 
 Si existe el .lrc, la letra se quema en el video con relleno progresivo
@@ -18,7 +18,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 audio = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "media/kametra.m4a")
 lrc = sys.argv[2] if len(sys.argv) > 2 else os.path.join(ROOT, "media/kametra.lrc")
 out = sys.argv[3] if len(sys.argv) > 3 else os.path.join(ROOT, "media/kametra_karaoke.mp4")
-title = "Kametra"
+title = sys.argv[4] if len(sys.argv) > 4 else "Kametra"
 
 
 def duration(path):
@@ -71,6 +71,7 @@ Dialogue: 0,{ass_time(0)},{ass_time(total)},Title,,0,0,0,,{esc(title)}
             continue
         # Duración del relleno: proporcional al texto, sin pasar del inicio de la siguiente línea
         fill = min(end - t, max(1.5, len(text) * 0.11 + 0.8)) * 0.92
+        end = min(end, t + fill + 4)  # no dejar la línea fija durante interludios largos
         words = text.split()
         weights = [len(w) + 1 for w in words]
         cs_total = int(fill * 100)

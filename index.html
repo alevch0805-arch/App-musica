@@ -29,7 +29,9 @@
   <h1>🎤 Audio → Video Karaoke</h1>
 
   <section class="panel">
-    <label>1. Elige tus archivos de audio (puedes seleccionar varios o una carpeta; se busca automáticamente "kametra")</label>
+    <label>Canción del himnario</label>
+    <select id="songSelect" style="width:100%;padding:8px;border-radius:8px;background:#120e1c;color:var(--text);border:1px solid #2e2640"></select>
+    <label>O elige tus propios archivos — 1. Elige tus archivos de audio (puedes seleccionar varios o una carpeta; se busca automáticamente "kametra")</label>
     <input id="audioFiles" type="file" accept="audio/*,video/*" multiple>
     <label>2. Letra: carga un archivo .lrc / .txt o pégala abajo</label>
     <input id="lyricsFile" type="file" accept=".lrc,.txt,text/plain">
@@ -77,20 +79,27 @@ $('audioFiles').addEventListener('change', e => {
                : `⚠ No se encontró "kametra" entre ${files.length} archivo(s); usando "${file.name}"`);
 });
 
-/* ---------- Carga automática de media/kametra.* ---------- */
-(async () => {
-  audio.src = 'media/kametra.m4a';
-  audio.addEventListener('loadedmetadata', () => {
-    if (songTitle) return;
-    songTitle = 'Kametra';
-    $('playBtn').disabled = $('recordBtn').disabled = false;
-    status('✔ Cargado automáticamente: media/kametra.m4a');
-  }, { once: true });
+/* ---------- Canciones incluidas en media/ ---------- */
+const SONGS = [
+  ['02-vive-cristo-en-mi', '2. Vive Cristo en mí'],
+  ['84-que-nadie-tome-tu-corona', '84. Que nadie tome tu corona'],
+  ['28-para-mi-el-vivir-es-cristo', '28. Para mí el vivir es Cristo'],
+  ['17-se-parte-de-nuestra-fraternidad', '17. Sé parte de nuestra fraternidad'],
+];
+const sel = $('songSelect');
+SONGS.forEach(([id, t]) => sel.add(new Option(t, id)));
+async function loadSong(id) {
+  const [, t] = SONGS.find(s => s[0] === id);
+  songTitle = t; audio.src = `media/${id}.m4a`;
+  $('playBtn').disabled = $('recordBtn').disabled = false;
   try {
-    const r = await fetch('media/kametra.lrc');
-    if (r.ok) { $('lyrics').value = await r.text(); applyLyrics(); }
+    const r = await fetch(`media/${id}.lrc`);
+    if (r.ok) { $('lyrics').value = await r.text(); applyLyrics(); status(`✔ ${t}: audio y letra cargados.`); return; }
   } catch {}
-})();
+  status(`✔ ${t}: audio cargado. (Abre la página con un servidor, p. ej. "python3 -m http.server", para cargar la letra automáticamente.)`);
+}
+sel.onchange = () => loadSong(sel.value);
+loadSong(SONGS[1][0]);
 
 /* ---------- Letra ---------- */
 $('lyricsFile').addEventListener('change', async e => {

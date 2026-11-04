@@ -1,0 +1,152 @@
+{
+  "_ayuda": "Cada canción: 'secciones' tiene la letra; 'bloques' dice en qué segundos se canta cada sección [inicio, fin, sección]. Las líneas se reparten dentro del bloque según su número de sílabas. Ajusta los segundos si la letra va adelantada o atrasada y vuelve a ejecutar tools/build_all.py.",
+  "canciones": [
+    {
+      "id": "02-vive-cristo-en-mi",
+      "titulo": "2. Vive Cristo en mí",
+      "audio": "media/02-vive-cristo-en-mi.m4a",
+      "secciones": {
+        "1": [
+          "Joven al servicio de Dios tu Creador",
+          "En ti está su fuerza, su gloria y virtud;",
+          "Almas que transitan necesitan de ti,",
+          "Requieren testimonio, buenas de salvación.",
+          "Acude presto ya."
+        ],
+        "2": [
+          "Palabra fiel y digna al mundo anunciar,",
+          "No temas ni desmayes, muy firme hay que estar.",
+          "Enseña y exhorta, sé ejemplo de valor,",
+          "Anuncia las virtudes de Dios, tu Creador.",
+          "Acude presto ya."
+        ],
+        "3": [
+          "Mira, la mies es mucha y obreros faltan ya,",
+          "Acude presto a ella, no debes claudicar;",
+          "Mantente en la doctrina, cuídala con amor,",
+          "Procura presentarte como es digno ante Dios.",
+          "Acude presto ya."
+        ],
+        "coro": [
+          "Despierta el don que está en ti,",
+          "Te he escrito sabiendo que harás",
+          "Más de lo que te digo",
+          "Como buen siervo fiel."
+        ]
+      },
+      "bloques": [
+        [10.0, 38.8, "1"],
+        [40.0, 68.0, "coro"],
+        [69.5, 97.5, "2"],
+        [99.2, 127.2, "coro"]
+      ]
+    },
+    {
+      "id": "84-que-nadie-tome-tu-corona",
+      "titulo": "84. Que nadie tome tu corona",
+      "audio": "media/84-que-nadie-tome-tu-corona.m4a",
+      "secciones": {
+        "1a": [
+          "El mundo ha cerrado su corazón,",
+          "Van caminando sin rumbo, sin dirección,",
+          "A la perdición cada paso dan,",
+          "Alejados de Dios ellos están,"
+        ],
+        "1b": [
+          "Apresurados avanzan cuando a ciegas van",
+          "Y cada tropiezo los hace caer,",
+          "Padre, yo soy joven, dime, ¿qué puedo hacer?"
+        ],
+        "coro": [
+          "Sé un ejemplo a seguir a donde vayas,",
+          "En tu palabra, tu amor y en tu fe.",
+          "Que tu conducta hable de lo que crees",
+          "Y en tu pureza un faro has de ser."
+        ],
+        "final": [
+          "Sé un ejemplo a seguir a donde vayas,",
+          "En tu palabra, tu amor y en tu fe.",
+          "Que tu conducta hable de lo que crees",
+          "Y en tu pureza un faro has de ser.",
+          "No te detengas que el tiempo se va,",
+          "Dedícate a la palabra y a enseñar,",
+          "El don de Dios vive en lo profundo de tu ser,",
+          "Con tu ejemplo hazlo crecer",
+          "Con tu ejemplo hazlo crecer",
+          "Con tu ejemplo hazlo crecer"
+        ]
+      },
+      "bloques": [
+        [31.2, 57.6, "1a"],
+        [57.8, 100.5, "1b+coro"],
+        [102.5, 127.6, "1a"],
+        [128.5, 171.8, "1b+coro"],
+        [185.5, 258.2, "final"]
+      ]
+    },
+    {
+      "id": "28-para-mi-el-vivir-es-cristo",
+      "titulo": "28. Para mí el vivir es Cristo",
+      "audio": "media/28-para-mi-el-vivir-es-cristo.m4a",
+      "secciones": {
+        "1": [
+          "Naciendo el sol, juventud, debes tomar la hoz,",
+          "En la labor tus manos necesita Dios.",
+          "Fraternidad, es hora ya de laborar,",
+          "Vayamos juntos por Dios a trabajar."
+        ],
+        "2": [
+          "Oh juventud, el tiempo de la siega es hoy,",
+          "En plenitud te encuentras, oh fraternidad.",
+          "Con gran valor tendremos que tomar la hoz,",
+          "Cual labrador trabaja para Dios."
+        ],
+        "coro": [
+          "Echad la hoz, porque la mies madura está,",
+          "Los frutos ya tenéis que levantar.",
+          "Fraternidad, es hora ya de laborar,",
+          "Vayamos todos por Dios a trabajar."
+        ]
+      },
+      "bloques": [
+        [36.0, 129.0, "1+coro"],
+        [135.2, 233.5, "2+coro"]
+      ]
+    },
+    {
+      "id": "17-se-parte-de-nuestra-fraternidad",
+      "titulo": "17. Sé parte de nuestra fraternidad",
+      "audio": "media/17-se-parte-de-nuestra-fraternidad.m4a",
+      "secciones": {
+        "1": [
+          "Si has pensado una vez regresar,",
+          "Y en tus caminos no encuentras la paz;",
+          "Si crees que para ti es el final,",
+          "Se encuentra siempre a tu lado Jehová."
+        ],
+        "2": [
+          "Si pones todo presente en tu Dios,",
+          "Si alabas siempre con gozo y amor,",
+          "Ya nada te apartará del Señor,",
+          "Tu premio obtendrás vencedor."
+        ],
+        "coro": [
+          "Si tienes fe y esperanza en Jehová,",
+          "No olvides que nuevas fuerzas tendrás,",
+          "Si tienes fe y esperanza en Jehová,",
+          "Recuerda que nuevas fuerzas tendrás.",
+          "Así, como águila tus alas levantarás,",
+          "Correrás y no te cansarás,",
+          "Podrás caminar y no te fatigarás,",
+          "Es porque llegarás al final."
+        ]
+      },
+      "bloques": [
+        [18.5, 42.0, "1"],
+        [44.0, 94.0, "coro"],
+        [97.2, 123.2, "2"],
+        [124.8, 160.5, "coro"]
+      ]
+    }
+  ]
+}
