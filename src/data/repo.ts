@@ -108,6 +108,8 @@ export interface HymnPrefs {
   videoId: string | null;
   syncTimes: number[] | null;
   offset: number;
+  /** Tempo elegido por el usuario para el metrónomo (null = el del himno). */
+  bpm: number | null;
 }
 
 export function loadHymnPrefs(hymn: Hymn): HymnPrefs {
@@ -117,6 +119,7 @@ export function loadHymnPrefs(hymn: Hymn): HymnPrefs {
     videoId: hymn.videoId ?? null,
     syncTimes: hymn.syncTimes ?? null,
     offset: 0,
+    bpm: null,
     ...load<Partial<HymnPrefs>>(`hymn:${hymn.id}`, {}),
   };
 }

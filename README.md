@@ -19,8 +19,10 @@ invitación y cada cuenta sólo puede usarse en **2 dispositivos**.
 | Publicar sincronización | El administrador sincroniza un vídeo una vez y lo publica para todos. |
 | Listas para el culto | Himnos en orden, cada uno en su tono para ese día, con notas («sólo estrofas 1 y 3»). Se toca pasando de un himno a otro con flechas o pedal; se comparte por WhatsApp. |
 | Modo proyector | Sólo la letra, en grande, una estrofa por pantalla. Avanza con flechas, espacio, mando de presentación o tocando la pantalla; tecla B = pantalla en negro; pasa solo al siguiente himno de la lista. |
+| Metrónomo | Usa el tempo y el compás del himno (3/4, 6/8…), acento en el primer tiempo, ajuste ±1 y «Tap» para marcar el tempo tocando. Recuerda el tempo elegido para cada himno. |
 | Cantos propios | Editor con vista previa; convierte el formato «acordes encima de la letra» a ChordPro. |
 | Cuentas | Registro sólo con código de invitación, máximo 2 dispositivos por cuenta, desvincular uno cada 30 días. |
+| Panel de administrador | Crear invitaciones (para 1 o varias personas, con caducidad) y enviarlas por WhatsApp con el enlace y el código. Ver usuarios, sus dispositivos y último uso; quitar dispositivos, subir el límite a alguien, bloquear o dar permisos de admin. |
 | Sin conexión | App instalable (PWA); guarda la última copia de los himnarios para usarla sin internet. |
 
 ## Probarla
@@ -38,13 +40,14 @@ dominio público (`himnarios/demo/`).
 ## Activar cuentas y el límite de 2 dispositivos
 
 1. Crea un proyecto gratuito en [supabase.com](https://supabase.com).
-2. En *SQL Editor* ejecuta `supabase/migrations/001_inicial.sql`.
+2. En *SQL Editor* ejecuta, en orden, `supabase/migrations/001_inicial.sql` y
+   `supabase/migrations/002_admin.sql`.
 3. Copia `.env.example` a `.env` y pon la *Project URL* y la *anon key*.
-4. Crea códigos de invitación (en *Table Editor → invite_codes* o por SQL):
+4. Crea **tu** primera invitación por SQL (las demás, desde el panel *Admin* de la app):
    ```sql
-   insert into invite_codes (code, note) values ('HIMNOS-ANA-7Q2', 'Para Ana');
+   insert into invite_codes (code, note) values ('HIM-PRIMERA-01', 'Administrador');
    ```
-5. Hazte administrador tras registrarte:
+5. Regístrate en la app con ese código y hazte administrador:
    ```sql
    update profiles set is_admin = true where email = 'tu@correo.com';
    ```
@@ -61,6 +64,10 @@ cuenta (`register_device`) y **sólo entrega los himnos a dispositivos
 registrados** (políticas RLS), así que no basta con modificar la app para
 saltárselo. Para cambiar el límite de alguien:
 `update profiles set max_devices = 3 where email = '...'`.
+
+Las reglas de la base de datos tienen pruebas propias (invitaciones, límite de
+dispositivos, permisos, bloqueo). Con un Postgres local:
+`PGHOST=... PGUSER=postgres supabase/tests/run.sh`.
 
 ## Distribuirla a tus usuarios
 

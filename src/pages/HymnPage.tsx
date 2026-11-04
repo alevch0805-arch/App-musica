@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ChordDiagram } from '../components/ChordDiagram';
 import { SongView, displayChord } from '../components/SongView';
+import { MetronomePanel } from '../components/MetronomePanel';
 import { VideoSync, type VideoSyncHandle } from '../components/VideoSync';
 import { deleteCustomHymn, loadHymnPrefs, publishSync, saveHymnPrefs, useLibrary, type HymnPrefs } from '../data/repo';
 import { nextSunday } from './Setlists';
@@ -211,6 +212,7 @@ function HymnView({ hymnId, listId, pos }: { hymnId: string; listId: string | nu
 
       <div className="hymn-body">
         <aside className="player">
+          <MetronomePanel tempo={song.tempo} time={song.time} bpm={prefs.bpm} onBpm={(bpm) => changePrefs({ bpm })} />
           <VideoSync
             ref={video}
             videoId={prefs.videoId}

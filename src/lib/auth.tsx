@@ -10,6 +10,7 @@ export interface Profile {
   email: string | null;
   display_name: string | null;
   is_admin: boolean;
+  blocked?: boolean;
   max_devices: number;
 }
 
@@ -29,6 +30,8 @@ export function friendlyError(message: string): string {
   if (message.includes('DEVICE_LIMIT')) return 'Tu cuenta ya está activa en el máximo de dispositivos permitidos.';
   if (message.includes('INVITE_INVALID')) return 'El código de invitación no es válido o ya se usó.';
   if (message.includes('UNLINK_TOO_SOON')) return 'Sólo puedes desvincular un dispositivo cada 30 días. Contacta con el administrador.';
+  if (message.includes('BLOCKED')) return 'Tu cuenta está desactivada. Contacta con el administrador.';
+  if (message.includes('CANNOT_DEMOTE_SELF')) return 'No puedes quitarte a ti mismo el permiso de administrador ni bloquearte.';
   if (message.includes('Invalid login credentials')) return 'Correo o contraseña incorrectos.';
   if (message.includes('Email not confirmed')) return 'Confirma tu correo antes de entrar (revisa tu bandeja de entrada).';
   if (message.includes('Database error saving new user')) return 'El código de invitación no es válido o ya se usó.';

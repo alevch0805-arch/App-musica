@@ -10,9 +10,10 @@ import { SettingsPage } from './pages/SettingsPage';
 import { Setlists } from './pages/Setlists';
 import { SetlistPage } from './pages/SetlistPage';
 import { Projector } from './pages/Projector';
+import { Admin } from './pages/Admin';
 
 export function App() {
-  const { status, error, signOut } = useAuth();
+  const { status, error, signOut, profile } = useAuth();
 
   if (status === 'loading') return <p className="center">Cargando…</p>;
   if (status === 'signedOut') return <Login />;
@@ -33,6 +34,7 @@ export function App() {
         {isDemo && <span className="chip demo" title="Sin servidor: no hay registro ni límite de dispositivos">modo demo</span>}
         <span className="spacer" />
         <NavLink to="/listas">Listas</NavLink>
+        {profile?.is_admin && <NavLink to="/admin">Admin</NavLink>}
         <NavLink to="/ajustes">Ajustes</NavLink>
       </nav>
       <main>
@@ -42,6 +44,7 @@ export function App() {
           <Route path="/nuevo" element={<Editor />} />
           <Route path="/editar/:id" element={<Editor />} />
           <Route path="/ajustes" element={<SettingsPage />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="/listas" element={<Setlists />} />
           <Route path="/listas/:id" element={<SetlistPage />} />
           <Route path="/proyectar/:id" element={<Projector />} />
