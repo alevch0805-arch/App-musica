@@ -65,7 +65,7 @@ function HymnView({ hymnId, listId, pos }: { hymnId: string; listId: string | nu
   const setTranspose = (n: number) => {
     if (item && setlist && !listEditable) setTempTranspose(n);
     else if (item && setlist) updateSetlist(setlist.id, (l) => ({ ...l, items: l.items.map((x, j) => (j === pos ? { ...x, transpose: n } : x)) }));
-    else setTranspose(n);
+    else changePrefs({ transpose: n });
   };
   const goTo = useCallback((i: number) => {
     const target = setlist?.items[i];

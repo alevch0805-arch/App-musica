@@ -227,7 +227,7 @@ export async function refreshSetlists(force = false): Promise<void> {
   await push();
   const { data, error } = await supabase.from('setlists').select('*');
   if (error) { setStatus('error'); return; }
-  lists = mergeSetlists((data as Row[]).map(fromRow), lists, dirty, deleted);
+  lists = mergeSetlists(((data ?? []) as Row[]).map(fromRow), lists, dirty, deleted);
   persist();
   setStatus(dirty.size || deleted.size ? 'error' : 'synced');
 }
