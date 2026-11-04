@@ -66,18 +66,47 @@ saltárselo. Para cambiar el límite de alguien:
 `update profiles set max_devices = 3 where email = '...'`.
 
 Las reglas de la base de datos tienen pruebas propias (invitaciones, límite de
-dispositivos, permisos, bloqueo). Con un Postgres local:
+dispositivos, permisos, bloqueo, listas). Con un Postgres local:
 `PGHOST=... PGUSER=postgres supabase/tests/run.sh`.
 
 ## Distribuirla a tus usuarios
 
-- **Android**: empaqueta con [Capacitor](https://capacitorjs.com)
-  (`npx cap add android`) y comparte el APK directamente; para uso privado no
-  necesitas Google Play.
-- **iPhone**: lo más sencillo es la PWA (Safari → Compartir → *Añadir a pantalla
-  de inicio*). Una app nativa exige cuenta de Apple Developer (99 USD/año) y
-  TestFlight o App Store.
-- **Web**: sube `dist/` a Netlify, Vercel o Cloudflare Pages (gratis).
+### Android (APK, sin Google Play)
+
+El APK se compila solo en GitHub (no necesitas Android Studio):
+
+1. **Crea una clave de firma una sola vez** y guárdala bien (si la pierdes, tus
+   usuarios tendrán que desinstalar y volver a instalar la app):
+   ```bash
+   keytool -genkeypair -v -keystore himnos.jks -alias himnos -keyalg RSA -keysize 2048 -validity 10000
+   base64 -w0 himnos.jks > himnos.jks.txt     # en Mac: base64 -i himnos.jks -o himnos.jks.txt
+   ```
+2. En GitHub → *Settings → Secrets and variables → Actions* añade:
+   - `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`
+   - `ANDROID_KEYSTORE_BASE64` (el contenido de `himnos.jks.txt`),
+     `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` (`himnos`) y `ANDROID_KEY_PASSWORD`
+3. Pestaña *Actions* → **APK de Android** → *Run workflow*. Al terminar,
+   descarga `himnos-apk` en *Artifacts*. Si creas una etiqueta (`v1.0.0`), el
+   APK se publica además en *Releases*, con un enlace fijo para compartir.
+4. Tus usuarios abren el enlace del APK en el móvil y aceptan «instalar apps de
+   origen desconocido».
+
+En la app de Android el dispositivo se identifica con el identificador del propio
+teléfono: aunque borren los datos o reinstalen, sigue contando como el mismo
+dispositivo. El botón «atrás» del teléfono navega dentro de la app.
+
+Para compilar en tu ordenador (con Android Studio instalado):
+`npm run build && npx cap sync android && npx cap open android`.
+
+### iPhone
+
+Lo más sencillo es la PWA: abrir la web en Safari → Compartir → *Añadir a
+pantalla de inicio*. Una app nativa exige cuenta de Apple Developer (99 USD/año)
+y TestFlight o App Store (el proyecto ya usa Capacitor: `npx cap add ios`).
+
+### Web
+
+Sube `dist/` a Netlify, Vercel o Cloudflare Pages (gratis).
 
 ## Estructura
 
@@ -85,8 +114,11 @@ dispositivos, permisos, bloqueo). Con un Postgres local:
 himnarios/demo/         himnos de ejemplo (ChordPro)
 src/music/              teoría musical, ChordPro, digitaciones (con pruebas)
 src/components/         diagramas, letra con acordes, reproductor sincronizado
-src/pages/              biblioteca, himno, editor, acceso, dispositivos, ajustes
-src/data/repo.ts        carga de himnarios (servidor / caché / demo)
-supabase/migrations/    base de datos, invitaciones y límite de dispositivos
+src/pages/              biblioteca, himno, listas, proyector, editor, admin, acceso…
+src/data/               himnarios (servidor / caché / demo) y listas sincronizadas
+supabase/migrations/    base de datos: invitaciones, dispositivos, admin, listas
+supabase/tests/         pruebas de las reglas de la base de datos
+android/                proyecto de Android (Capacitor)
+.github/workflows/      compilación automática del APK
 scripts/                importador de himnarios
 ```

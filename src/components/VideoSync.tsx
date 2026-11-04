@@ -79,7 +79,7 @@ export const VideoSync = forwardRef<VideoSyncHandle, Props>(function VideoSync(
         videoId,
         width: '100%',
         height: '100%',
-        playerVars: { playsinline: 1, rel: 0, modestbranding: 1 },
+        playerVars: { playsinline: 1, rel: 0, origin: window.location.origin },
         events: { onReady: () => !cancelled && setReady(true) },
       });
     });

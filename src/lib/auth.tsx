@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from './supabase';
-import { getDeviceId, getDeviceName } from './device';
+import { deviceReady, getDeviceId, getDeviceName } from './device';
 import { setSyncUser } from '../data/setlists';
 
 export type AuthStatus = 'loading' | 'demo' | 'signedOut' | 'deviceLimit' | 'ready' | 'error';
@@ -54,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setStatus('signedOut');
       return;
     }
+    await deviceReady;
     const { error: rpcError } = await supabase.rpc('register_device', {
       p_device_id: getDeviceId(),
       p_name: getDeviceName(),

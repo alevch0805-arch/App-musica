@@ -11,7 +11,14 @@ const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
  */
 export const supabase: SupabaseClient | null = url && anonKey
   ? createClient(url, anonKey, {
-      global: { headers: { 'x-device-id': getDeviceId() } },
+      global: {
+        // La cabecera se añade en cada petición (el identificador puede llegar más tarde en la app nativa).
+        fetch: (input, init) => {
+          const headers = new Headers(init?.headers);
+          headers.set('x-device-id', getDeviceId());
+          return fetch(input, { ...init, headers });
+        },
+      },
       auth: { persistSession: true, autoRefreshToken: true },
     })
   : null;

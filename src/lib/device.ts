@@ -1,9 +1,11 @@
 /**
- * Identificador del dispositivo. Se genera una vez y se guarda en el equipo.
- * Nota: en la versión web, si el usuario borra los datos del navegador se crea
- * un identificador nuevo (cuenta como otro dispositivo). En la app nativa
- * (Capacitor) conviene sustituirlo por Device.getId(), que es estable.
+ * Identificador del dispositivo.
+ * - En la app de Android/iPhone (Capacitor) se usa el identificador del propio
+ *   teléfono, que no cambia aunque se borren los datos o se reinstale la app.
+ * - En el navegador se genera uno y se guarda; si el usuario borra los datos
+ *   del navegador, cuenta como un dispositivo nuevo.
  */
+import { Capacitor } from '@capacitor/core';
 import { load, save } from './storage';
 
 const KEY = 'device-id';
@@ -19,7 +21,25 @@ export function getDeviceId(): string {
   return id;
 }
 
+/** Se resuelve cuando el identificador definitivo está listo (en la app nativa es asíncrono). */
+export const deviceReady: Promise<void> = (async () => {
+  if (!Capacitor.isNativePlatform()) return;
+  try {
+    const { Device } = await import('@capacitor/device');
+    const { identifier } = await Device.getId();
+    if (identifier) save(KEY, `${Capacitor.getPlatform()}-${identifier}`);
+    const info = await Device.getInfo();
+    const model = [info.manufacturer, info.model].filter(Boolean).join(' ');
+    save('device-name', `${model || (info.platform === 'ios' ? 'iPhone' : 'Android')} · app`);
+  } catch {
+    /* si falla, se usa el identificador guardado */
+  }
+})();
+
 export function getDeviceName(): string {
+  if (Capacitor.isNativePlatform()) {
+    return load<string | null>('device-name', null) ?? (Capacitor.getPlatform() === 'ios' ? 'iPhone · app' : 'Android · app');
+  }
   const ua = navigator.userAgent;
   const os = /Android/i.test(ua) ? 'Android'
     : /iPhone/i.test(ua) ? 'iPhone'

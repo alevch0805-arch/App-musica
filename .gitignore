@@ -5,3 +5,5 @@ dist
 *.log
 # Himnarios con derechos de autor: no los subas al repositorio
 contenido/
+himnos.jks*
+*.keystore

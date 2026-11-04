@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Himnos y acordes</string>
+    <string name="title_activity_main">Himnos y acordes</string>
+    <string name="package_name">org.himnos.acordes</string>
+    <string name="custom_url_scheme">org.himnos.acordes</string>
+</resources>
