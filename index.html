@@ -77,6 +77,21 @@ $('audioFiles').addEventListener('change', e => {
                : `⚠ No se encontró "kametra" entre ${files.length} archivo(s); usando "${file.name}"`);
 });
 
+/* ---------- Carga automática de media/kametra.* ---------- */
+(async () => {
+  audio.src = 'media/kametra.m4a';
+  audio.addEventListener('loadedmetadata', () => {
+    if (songTitle) return;
+    songTitle = 'Kametra';
+    $('playBtn').disabled = $('recordBtn').disabled = false;
+    status('✔ Cargado automáticamente: media/kametra.m4a');
+  }, { once: true });
+  try {
+    const r = await fetch('media/kametra.lrc');
+    if (r.ok) { $('lyrics').value = await r.text(); applyLyrics(); }
+  } catch {}
+})();
+
 /* ---------- Letra ---------- */
 $('lyricsFile').addEventListener('change', async e => {
   const f = e.target.files[0]; if (!f) return;
