@@ -183,3 +183,38 @@ label.check input { width: auto; min-height: 0; }
   .hymn-body { display: block; }
 }
 .seg.mid .lyric::after { content: '-'; color: var(--muted); padding: 0 .1em; }
+
+/* Listas para el culto */
+.back { text-decoration: none; font-size: .9rem; display: inline-block; margin-bottom: 8px; }
+.muted { color: var(--muted); }
+.hymn-list .date { min-width: 6.5em; color: var(--accent); font-weight: 600; font-size: .9rem; }
+.hymn-list li.past { opacity: .6; }
+.title-input { flex: 1 1 220px; font-size: 1.25rem; font-weight: 700; }
+.items { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 8px; }
+.item { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+.item .pos { font-weight: 700; color: var(--accent); min-width: 1.5em; }
+.item-main { flex: 1 1 220px; display: grid; gap: 4px; }
+.item-main a { font-weight: 600; text-decoration: none; }
+.item .note { min-height: 32px; padding: 4px 8px; font-size: .85rem; border-style: dashed; }
+.item .key { min-width: 2.8em; text-align: center; font-weight: 700; }
+.item .tool button { min-width: 36px; min-height: 36px; padding: 4px 8px; }
+.results { list-style: none; padding: 0; margin: 8px 0 0; }
+.results button { width: 100%; justify-content: flex-start; text-align: left; }
+.list-nav { display: flex; align-items: center; gap: 8px; }
+.list-nav .list-name { flex: 1; text-align: center; font-weight: 600; text-decoration: none; }
+.item-note { margin: 4px 0; padding: 6px 10px; background: var(--chorus); border-radius: 8px; font-size: .9rem; }
+.hymn-head .row { margin-top: 8px; }
+.hymn-head select { max-width: 220px; }
+
+/* Proyector */
+.projector { position: fixed; inset: 0; z-index: 100; background: #000; color: #fff; display: grid; place-items: center; cursor: pointer; user-select: none; padding: 4vh 5vw 10vh; }
+.slide { text-align: center; line-height: 1.3; font-weight: 600; text-wrap: balance; }
+.slide p { margin: 0 0 .25em; }
+.slide.chorus { font-style: italic; color: #ffe7a3; }
+.slide.title h1 { font-size: 1.3em; margin: 0; }
+.slide-num { font-size: .6em; color: #f2c14e; margin-bottom: .2em; }
+.proj-bar { position: fixed; left: 0; right: 0; bottom: 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); background: linear-gradient(transparent, rgba(0,0,0,.85)); opacity: .25; transition: opacity .2s; cursor: default; }
+.proj-bar:hover, .proj-bar:focus-within { opacity: 1; }
+.proj-bar button { background: rgba(255,255,255,.1); color: #fff; border-color: rgba(255,255,255,.25); min-height: 36px; }
+.proj-info { color: #bbb; font-size: .85rem; }
+@media (hover: none) { .proj-bar { opacity: .7; } }

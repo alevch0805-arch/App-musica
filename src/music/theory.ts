@@ -139,15 +139,18 @@ function simpleName(c: Chord): string {
 
 /**
  * Sugiere la cejilla (capo) para que los acordes resulten más fáciles en guitarra.
- * Devuelve la cejilla con más acordes fáciles (desempata la más baja).
+ * Cada traste de cejilla resta un poco, para no proponer una cejilla alta
+ * cuando sin ella los acordes ya son casi todos fáciles.
  */
 export function suggestCapo(chords: Chord[], maxCapo = 7): { capo: number; easy: number; total: number } {
   const unique = new Map(chords.map((c) => [simpleName(c) + (c.bass ?? ''), c]));
   const list = [...unique.values()];
   let best = { capo: 0, easy: -1, total: list.length };
+  let bestScore = -Infinity;
   for (let capo = 0; capo <= maxCapo; capo++) {
     const easy = list.filter((c) => EASY.has(simpleName(transposeChord(c, -capo)))).length;
-    if (easy > best.easy) best = { capo, easy, total: list.length };
+    const score = easy - capo * 0.3;
+    if (score > bestScore) { bestScore = score; best = { capo, easy, total: list.length }; }
   }
   return best;
 }

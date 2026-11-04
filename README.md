@@ -17,6 +17,8 @@ invitación y cada cuenta sólo puede usarse en **2 dispositivos**.
 | Notación | Americana (C D E) o latina (Do Re Mi), a elección de cada usuario. |
 | Vídeo | Reproductor oficial de YouTube. **Sincronización a toques**: mientras suena, pulsas «Marcar» (o la barra espaciadora) en cada cambio de acorde. Luego, al reproducir, resalta el acorde actual, muestra su diagrama y los siguientes, y hace scroll solo. Tocar un acorde salta a ese punto del vídeo. Velocidad 0.5×–1.25× y ajuste fino del desfase. |
 | Publicar sincronización | El administrador sincroniza un vídeo una vez y lo publica para todos. |
+| Listas para el culto | Himnos en orden, cada uno en su tono para ese día, con notas («sólo estrofas 1 y 3»). Se toca pasando de un himno a otro con flechas o pedal; se comparte por WhatsApp. |
+| Modo proyector | Sólo la letra, en grande, una estrofa por pantalla. Avanza con flechas, espacio, mando de presentación o tocando la pantalla; tecla B = pantalla en negro; pasa solo al siguiente himno de la lista. |
 | Cantos propios | Editor con vista previa; convierte el formato «acordes encima de la letra» a ChordPro. |
 | Cuentas | Registro sólo con código de invitación, máximo 2 dispositivos por cuenta, desvincular uno cada 30 días. |
 | Sin conexión | App instalable (PWA); guarda la última copia de los himnarios para usarla sin internet. |

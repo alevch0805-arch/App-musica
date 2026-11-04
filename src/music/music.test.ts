@@ -48,7 +48,9 @@ describe('transposición y formato', () => {
     // Eb Ab Bb con cejilla 3 se tocan como C F G... con cejilla 1 como D G A (todos fáciles)
     const s = suggestCapo(['Eb', 'Ab', 'Bb'].map(p));
     expect(s.easy).toBe(3);
-    expect([1, 3]).toContain(s.capo);
+    expect(s.capo).toBe(1);
+    // Ya fáciles sin cejilla: no se propone ninguna.
+    expect(suggestCapo(['D', 'Bm', 'G', 'A', 'E7'].map(p)).capo).toBe(0);
   });
 });
 

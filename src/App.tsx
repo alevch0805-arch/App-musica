@@ -7,6 +7,9 @@ import { Editor } from './pages/Editor';
 import { Login } from './pages/Login';
 import { Devices } from './pages/Devices';
 import { SettingsPage } from './pages/SettingsPage';
+import { Setlists } from './pages/Setlists';
+import { SetlistPage } from './pages/SetlistPage';
+import { Projector } from './pages/Projector';
 
 export function App() {
   const { status, error, signOut } = useAuth();
@@ -29,6 +32,7 @@ export function App() {
         <NavLink to="/" end className="brand">♪ Himnos</NavLink>
         {isDemo && <span className="chip demo" title="Sin servidor: no hay registro ni límite de dispositivos">modo demo</span>}
         <span className="spacer" />
+        <NavLink to="/listas">Listas</NavLink>
         <NavLink to="/ajustes">Ajustes</NavLink>
       </nav>
       <main>
@@ -38,6 +42,9 @@ export function App() {
           <Route path="/nuevo" element={<Editor />} />
           <Route path="/editar/:id" element={<Editor />} />
           <Route path="/ajustes" element={<SettingsPage />} />
+          <Route path="/listas" element={<Setlists />} />
+          <Route path="/listas/:id" element={<SetlistPage />} />
+          <Route path="/proyectar/:id" element={<Projector />} />
           <Route path="*" element={<Library />} />
         </Routes>
       </main>

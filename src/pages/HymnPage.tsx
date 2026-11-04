@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ChordDiagram } from '../components/ChordDiagram';
 import { SongView, displayChord } from '../components/SongView';
 import { VideoSync, type VideoSyncHandle } from '../components/VideoSync';
 import { deleteCustomHymn, loadHymnPrefs, publishSync, saveHymnPrefs, useLibrary, type HymnPrefs } from '../data/repo';
+import { nextSunday } from './Setlists';
+import { addToSetlist, createSetlist, updateSetlist, useSetlists } from '../data/setlists';
 import { useAuth } from '../lib/auth';
 import { useSettings } from '../lib/settings';
 import { load, save } from '../lib/storage';
@@ -13,14 +15,17 @@ import type { Instrument } from '../music/voicings';
 
 export function HymnPage() {
   const { id } = useParams();
+  const [params] = useSearchParams();
+  const listId = params.get('lista');
+  const pos = Number(params.get('pos') ?? 0);
   const { library } = useLibrary();
   const hymn = library?.hymns.find((h) => h.id === id);
   if (!library) return <p className="center">Cargando…</p>;
   if (!hymn) return <p className="center">No encontré ese himno. <Link to="/">Volver</Link></p>;
-  return <HymnView key={hymn.id} hymnId={hymn.id} />;
+  return <HymnView key={`${hymn.id}:${listId}:${pos}`} hymnId={hymn.id} listId={listId} pos={pos} />;
 }
 
-function HymnView({ hymnId }: { hymnId: string }) {
+function HymnView({ hymnId, listId, pos }: { hymnId: string; listId: string | null; pos: number }) {
   const { library } = useLibrary();
   const hymn = library!.hymns.find((h) => h.id === hymnId)!;
   const hymnal = library!.hymnals.find((h) => h.id === hymn.hymnalId);
@@ -48,10 +53,36 @@ function HymnView({ hymnId }: { hymnId: string }) {
     });
   }, [hymnId]);
 
+  // Dentro de una lista, el tono es el de la lista (cada culto puede ir en un tono distinto).
+  const setlists = useSetlists();
+  const setlist = listId ? setlists.find((l) => l.id === listId) : undefined;
+  const item = setlist?.items[pos]?.hymnId === hymnId ? setlist.items[pos] : undefined;
+  const transpose = item ? item.transpose : prefs.transpose;
+  const setTranspose = (n: number) => {
+    if (item && setlist) updateSetlist(setlist.id, (l) => ({ ...l, items: l.items.map((x, j) => (j === pos ? { ...x, transpose: n } : x)) }));
+    else setTranspose(n);
+  };
+  const goTo = useCallback((i: number) => {
+    const target = setlist?.items[i];
+    if (target) navigate(`/himno/${encodeURIComponent(target.hymnId)}?lista=${setlist!.id}&pos=${i}`, { replace: true });
+  }, [setlist, navigate]);
+
+  // Flechas del teclado o pedal Bluetooth: himno anterior / siguiente de la lista.
+  useEffect(() => {
+    if (!item) return;
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.target as HTMLElement).closest('input, select, textarea')) return;
+      if (e.key === 'ArrowRight') goTo(pos + 1);
+      else if (e.key === 'ArrowLeft') goTo(pos - 1);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [item, pos, goTo]);
+
   const originalKey = parseChord(song.key ?? '') ?? (song.chordSequence[0] ? parseChord(song.chordSequence[0]) : null);
-  const soundingKey = originalKey ? transposeChord(originalKey, prefs.transpose) : null;
+  const soundingKey = originalKey ? transposeChord(originalKey, transpose) : null;
   const flats = prefersFlats(soundingKey, settings.accidentals);
-  const shift = prefs.transpose - prefs.capo;
+  const shift = transpose - prefs.capo;
   const fmt = (c: Chord | null) => (c ? formatChord(c, settings.notation, flats) : '—');
 
   const parsed = useMemo(() => song.chordSequence.map((c) => parseChord(c)), [song]);
@@ -67,8 +98,8 @@ function HymnView({ hymnId }: { hymnId: string }) {
   }, [parsed, shift]);
 
   const capoTip = useMemo(
-    () => suggestCapo(parsed.filter((c): c is Chord => !!c).map((c) => transposeChord(c, prefs.transpose))),
-    [parsed, prefs.transpose],
+    () => suggestCapo(parsed.filter((c): c is Chord => !!c).map((c) => transposeChord(c, transpose))),
+    [parsed, transpose],
   );
 
   const current = active !== null ? parsed[active] : null;
@@ -91,26 +122,55 @@ function HymnView({ hymnId }: { hymnId: string }) {
   return (
     <div className="hymn">
       <header className="hymn-head">
-        <Link to="/" className="back">← {hymnal?.name ?? 'Himnarios'}</Link>
+        {item && setlist ? (
+          <div className="list-nav">
+            <button onClick={() => goTo(pos - 1)} disabled={pos === 0} aria-label="Himno anterior">←</button>
+            <Link to={`/listas/${setlist.id}`} className="list-name">{setlist.name} · {pos + 1}/{setlist.items.length}</Link>
+            <button onClick={() => goTo(pos + 1)} disabled={pos >= setlist.items.length - 1} aria-label="Himno siguiente">→</button>
+          </div>
+        ) : (
+          <Link to="/" className="back">← {hymnal?.name ?? 'Himnarios'}</Link>
+        )}
         <h1>{hymn.number !== null && <span className="num">{hymn.number}</span>} {song.title || hymn.title}
           <button className="star-btn" onClick={toggleFavorite} aria-label={favorite ? 'Quitar de favoritos' : 'Añadir a favoritos'}>{favorite ? '★' : '☆'}</button>
         </h1>
         {song.author && <p className="author">{song.author}</p>}
+        {item?.note && <p className="item-note">📝 {item.note}</p>}
         <p className="meta">
           Tono original: <b>{fmt(originalKey)}</b>
-          {prefs.transpose !== 0 && <> · Suena en: <b>{fmt(soundingKey)}</b></>}
+          {transpose !== 0 && <> · Suena en: <b>{fmt(soundingKey)}</b></>}
           {song.time && <> · Compás {song.time}</>}
           {song.tempo && <> · ♩ = {song.tempo}</>}
         </p>
+        <div className="row">
+          <Link className="button" to={`/proyectar/${encodeURIComponent(hymn.id)}${item && setlist ? `?lista=${setlist.id}&pos=${pos}` : ''}`}>Proyectar</Link>
+          {!item && (
+            <select
+              value=""
+              aria-label="Añadir a una lista"
+              onChange={(e) => {
+                const v = e.target.value;
+                if (!v) return;
+                const listIdTarget = v === 'new' ? createSetlist(prompt('Nombre de la lista', 'Culto del domingo') || 'Culto del domingo', nextSunday()).id : v;
+                addToSetlist(listIdTarget, hymn.id, transpose);
+                alert('Añadido a la lista.');
+              }}
+            >
+              <option value="">+ Añadir a lista…</option>
+              {setlists.map((l) => <option key={l.id} value={l.id}>{l.name}{l.date ? ` (${l.date})` : ''}</option>)}
+              <option value="new">Nueva lista…</option>
+            </select>
+          )}
+        </div>
       </header>
 
       <div className="toolbar">
         <div className="tool">
           <span>Tono</span>
-          <button onClick={() => changePrefs({ transpose: prefs.transpose - 1 })} aria-label="Bajar medio tono">−</button>
-          <span className="mono val">{prefs.transpose > 0 ? '+' : ''}{prefs.transpose}</span>
-          <button onClick={() => changePrefs({ transpose: prefs.transpose + 1 })} aria-label="Subir medio tono">+</button>
-          {prefs.transpose !== 0 && <button className="ghost" onClick={() => changePrefs({ transpose: 0 })}>Original</button>}
+          <button onClick={() => setTranspose(transpose - 1)} aria-label="Bajar medio tono">−</button>
+          <span className="mono val">{transpose > 0 ? '+' : ''}{transpose}</span>
+          <button onClick={() => setTranspose(transpose + 1)} aria-label="Subir medio tono">+</button>
+          {transpose !== 0 && <button className="ghost" onClick={() => setTranspose(0)}>Original</button>}
         </div>
         <div className="tool">
           <span>Cejilla</span>
