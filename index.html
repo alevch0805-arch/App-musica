@@ -90,7 +90,7 @@ const sel = $('songSelect');
 SONGS.forEach(([id, t]) => sel.add(new Option(t, id)));
 async function loadSong(id) {
   const [, t] = SONGS.find(s => s[0] === id);
-  songTitle = t; audio.src = `media/${id}.m4a`;
+  songTitle = t; audio.src = `media/mejorado/${id}.m4a`;
   $('playBtn').disabled = $('recordBtn').disabled = false;
   try {
     const r = await fetch(`media/${id}.lrc`);
