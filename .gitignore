@@ -7,3 +7,4 @@ dist
 contenido/
 himnos.jks*
 *.keystore
+__pycache__/

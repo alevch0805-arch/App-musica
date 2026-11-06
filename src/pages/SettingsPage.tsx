@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { deleteLocalHymnal, localHymnals } from '../data/repo';
 import { useAuth } from '../lib/auth';
 import { useSettings } from '../lib/settings';
 import { isDemo } from '../lib/supabase';
@@ -8,6 +11,7 @@ import { Devices } from './Devices';
 export function SettingsPage() {
   const { settings, update } = useSettings();
   const { session, signOut, profile } = useAuth();
+  const [local, setLocal] = useState(localHymnals);
   return (
     <div className="settings">
       <div className="card">
@@ -40,6 +44,23 @@ export function SettingsPage() {
         <label>Tamaño de letra: {settings.fontSize}px
           <input type="range" min={12} max={40} value={settings.fontSize} onChange={(e) => update({ fontSize: Number(e.target.value) })} />
         </label>
+      </div>
+
+      <div className="card">
+        <h2>Himnarios en este dispositivo</h2>
+        {local.length === 0 ? <p className="hint">Ninguno.</p> : (
+          <ul className="admin-list">
+            {local.map((h) => (
+              <li key={h.id}>
+                <span className="grow">{h.name} <small>{h.count} himnos</small></span>
+                <button className="danger" onClick={() => {
+                  if (confirm(`¿Borrar «${h.name}» de este dispositivo?`)) { deleteLocalHymnal(h.id); setLocal(localHymnals()); }
+                }}>Borrar</button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="row end"><Link className="button" to="/importar">Importar himnario</Link></p>
       </div>
 
       {isDemo ? (

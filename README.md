@@ -20,6 +20,7 @@ invitación y cada cuenta sólo puede usarse en **2 dispositivos**.
 | Listas para el culto | Himnos en orden, cada uno en su tono para ese día, con notas («sólo estrofas 1 y 3»). Se toca pasando de un himno a otro con flechas o pedal; se envía por WhatsApp. Se guardan en la nube y funcionan sin conexión. Una lista **compartida** la ven todos los usuarios (sólo lectura, pueden copiarla); el administrador puede editar las compartidas. |
 | Modo proyector | Sólo la letra, en grande, una estrofa por pantalla. Avanza con flechas, espacio, mando de presentación o tocando la pantalla; tecla B = pantalla en negro; pasa solo al siguiente himno de la lista. |
 | Metrónomo | Usa el tempo y el compás del himno (3/4, 6/8…), acento en el primer tiempo, ajuste ±1 y «Tap» para marcar el tempo tocando. Recuerda el tempo elegido para cada himno. |
+| Importar himnarios | Pantalla «Importar himnario»: un archivo ChordPro con todo el himnario (o varios). El administrador lo sube para todos; sin servidor se guarda en el dispositivo. |
 | Cantos propios | Editor con vista previa; convierte el formato «acordes encima de la letra» a ChordPro. |
 | Cuentas | Registro sólo con código de invitación, máximo 2 dispositivos por cuenta, desvincular uno cada 30 días. |
 | Panel de administrador | Crear invitaciones (para 1 o varias personas, con caducidad) y enviarlas por WhatsApp con el enlace y el código. Ver usuarios, sus dispositivos y último uso; quitar dispositivos, subir el límite a alguien, bloquear o dar permisos de admin. |
@@ -68,6 +69,25 @@ saltárselo. Para cambiar el límite de alguien:
 Las reglas de la base de datos tienen pruebas propias (invitaciones, límite de
 dispositivos, permisos, bloqueo, listas). Con un Postgres local:
 `PGHOST=... PGUSER=postgres supabase/tests/run.sh`.
+
+## Convertir un himnario en PDF o Word
+
+`scripts/pdf_a_chordpro.py` convierte un himnario con «acordes encima de la
+letra» (acordes en negrita, títulos «N. TÍTULO», estrofas numeradas y «CORO»):
+
+```bash
+pip install -r scripts/requirements.txt
+soffice --headless --convert-to pdf himnario.docx          # sólo si es un Word
+python3 scripts/pdf_a_chordpro.py himnario.pdf contenido/juvenil --id juvenil --nombre "Himnario Regional Juvenil"
+```
+
+Genera un `.cho` por himno, **un archivo con todo el himnario** (`juvenil.chopro`,
+para la pantalla *Importar himnario*) y `revision.txt` con lo que conviene revisar.
+Coloca cada acorde sobre su sílaba según su posición en la página, recupera los
+bemoles/sostenidos que en algunos PDF quedan sueltos, comprueba que las
+alteraciones sean coherentes con el resto del himno y calcula el tono.
+Las posiciones son aproximadas cuando el PDF viene de una conversión: revisa
+los himnos con el editor de la app. Pruebas: `python3 -m unittest discover -s scripts -p 'test_*.py'`.
 
 ## Distribuirla a tus usuarios
 

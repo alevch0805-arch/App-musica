@@ -11,6 +11,7 @@ import { Setlists } from './pages/Setlists';
 import { SetlistPage } from './pages/SetlistPage';
 import { Projector } from './pages/Projector';
 import { Admin } from './pages/Admin';
+import { ImportPage } from './pages/ImportPage';
 
 export function App() {
   const { status, error, signOut, profile } = useAuth();
@@ -45,6 +46,7 @@ export function App() {
           <Route path="/editar/:id" element={<Editor />} />
           <Route path="/ajustes" element={<SettingsPage />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/importar" element={<ImportPage />} />
           <Route path="/listas" element={<Setlists />} />
           <Route path="/listas/:id" element={<SetlistPage />} />
           <Route path="/proyectar/:id" element={<Projector />} />

@@ -64,7 +64,10 @@ export function Library() {
         ))}
         {!results.length && <li className="empty">No hay resultados.</li>}
       </ul>
-      <p className="row end"><Link className="button" to="/nuevo">+ Añadir canto propio</Link></p>
+      <p className="row end">
+        <Link className="button" to="/importar">Importar himnario</Link>
+        <Link className="button" to="/nuevo">+ Añadir canto propio</Link>
+      </p>
     </div>
   );
 }

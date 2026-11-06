@@ -261,3 +261,6 @@ label.check input { width: auto; min-height: 0; }
 .sync.error { color: var(--accent); }
 .chip.shared { margin-left: 8px; font-size: .75rem; }
 input:disabled, select:disabled { opacity: .75; }
+.import { max-width: 760px; margin: 0 auto; }
+.import-list .num { min-width: 2.2em; text-align: right; color: var(--accent); font-weight: 700; }
+.import-list li { gap: 10px; }
