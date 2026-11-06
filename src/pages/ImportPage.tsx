@@ -26,7 +26,22 @@ export function ImportPage() {
   const pick = async (list: FileList | null) => {
     if (!list?.length) return;
     setError(null);
-    const read = await Promise.all([...list].map(async (f) => ({ name: f.name, text: await f.text() })));
+    const all = [...list];
+    const binary = all.filter((f) => /\.(pdf|docx?|odt|zip)$/i.test(f.name));
+    if (binary.length) {
+      setFiles([]);
+      setError(
+        `«${binary[0].name}» es un ${/\.pdf$/i.test(binary[0].name) ? 'PDF' : 'documento de Word'}: la app no puede leerlo directamente. ` +
+          'Primero hay que convertirlo a ChordPro (archivo .chopro) con el conversor; luego importa ese archivo.',
+      );
+      return;
+    }
+    const read = await Promise.all(all.map(async (f) => ({ name: f.name, text: await f.text() })));
+    if (!read.some((f) => /\[[^\]]+\]|\{\s*(title|t)\s*:/i.test(f.text))) {
+      setFiles([]);
+      setError('Ese archivo no parece un himnario en formato ChordPro (no tiene títulos ni acordes entre corchetes).');
+      return;
+    }
     setFiles(read);
     if (!name) setName(hymnalNameIn(read[0].text) ?? nameFromFile(read[0].name));
   };
@@ -59,7 +74,9 @@ export function ImportPage() {
           Elige uno o varios archivos ChordPro (<code>.chopro</code>, <code>.cho</code>, <code>.txt</code>). Un mismo archivo puede
           traer el himnario completo, con los himnos separados por <code>{'{new_song}'}</code>.
         </p>
-        <input type="file" accept=".chopro,.cho,.crd,.pro,.chordpro,.txt" multiple onChange={(e) => pick(e.target.files)} aria-label="Archivos" />
+        {/* Sin filtro de tipo: en los móviles, las extensiones .chopro/.cho salen desactivadas si se filtran. */}
+        <input type="file" multiple onChange={(e) => pick(e.target.files)} aria-label="Archivos" />
+        {error && files.length === 0 && <p className="error">{error}</p>}
       </div>
 
       {items.length > 0 && (
