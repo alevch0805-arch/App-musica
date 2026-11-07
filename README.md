@@ -41,7 +41,8 @@ dominio público (`himnarios/demo/`).
 ## Activar cuentas y el límite de 2 dispositivos
 
 1. Crea un proyecto gratuito en [supabase.com](https://supabase.com).
-2. En *SQL Editor* ejecuta, en orden, `supabase/migrations/001_inicial.sql`,
+2. En *SQL Editor* pega y ejecuta **`supabase/instalar.sql`** (todo en uno: crea la
+   base de datos y te muestra tu primer código de invitación). Equivale a ejecutar, en orden, `supabase/migrations/001_inicial.sql`,
    `supabase/migrations/002_admin.sql` y `supabase/migrations/003_listas.sql`.
 3. Copia `.env.example` a `.env` y pon la *Project URL* y la *anon key*.
 4. Crea **tu** primera invitación por SQL (las demás, desde el panel *Admin* de la app):
