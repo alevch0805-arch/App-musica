@@ -78,8 +78,13 @@ letra» (acordes en negrita, títulos «N. TÍTULO», estrofas numeradas y «COR
 ```bash
 pip install -r scripts/requirements.txt
 soffice --headless --convert-to pdf himnario.docx          # sólo si es un Word
-python3 scripts/pdf_a_chordpro.py himnario.pdf contenido/juvenil --id juvenil --nombre "Himnario Regional Juvenil"
+python3 scripts/pdf_a_chordpro.py himnario.pdf contenido/juvenil --id juvenil --nombre "Himnario Regional Juvenil" --original
 ```
+
+Usa `--original` con el PDF original del himnario (exportado del programa en que se
+diseñó): los acordes ya están en su sitio y no se «adivinan» alteraciones. Sin
+`--original` (PDF salido de convertir un Word), corrige el desplazamiento de los
+acordes y revisa las alteraciones por coherencia.
 
 Genera un `.cho` por himno, **un archivo con todo el himnario** (`juvenil.chopro`,
 para la pantalla *Importar himnario*) y `revision.txt` con lo que conviene revisar.

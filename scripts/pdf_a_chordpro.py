@@ -94,8 +94,17 @@ def split_chords(token: str) -> list[str] | None:
     return out
 
 
+def is_horizontal(c) -> bool:
+    """Texto horizontal. Algunos PDF (p. ej. exportados de Canva) traen una inclinación
+    ínfima (1e-07) y pdfplumber los marca como «no verticales»; se tolera."""
+    m = c.get('matrix')
+    if m:
+        return abs(m[1]) < 0.01 and abs(m[2]) < 0.01 and m[0] > 0
+    return c.get('upright', True)
+
+
 def page_lines(page) -> tuple[list[Line], list[dict], float]:
-    chars = [c for c in page.chars if c['text'] and c.get('upright', True)]
+    chars = [c for c in page.chars if c['text'] and is_horizontal(c)]
     if not chars:
         return [], [], 0
     sizes = collections.Counter(round(c['size'] * 2) / 2 for c in chars if not c['text'].isspace())
@@ -472,6 +481,9 @@ def process_body(current: 'Hymn', body_lines: list[Line], chord_lines: dict, bod
             if nxt is not None and not chord_lines[id(nxt)] and not SECTION_RE.match(nxt_text) \
                     and not LABEL_RE.match(nxt_text) and not nxt_text.startswith('*') \
                     and nxt.top - ln.top < 2.2 * body:
+                if pending_label:
+                    current.body.append(f'{{c: {pending_label}}}')
+                    pending_label = None
                 current.body.append(merge(cl, nxt))
                 i += 2
                 continue
@@ -533,12 +545,14 @@ LOOSE = '\u2063'  # marca interna: alteración recuperada de un signo suelto
 INVALID = {'E#': 'E', 'B#': 'B', 'Fb': 'F', 'Cb': 'C'}
 
 
-def normalize_accidentals(h: Hymn, warnings: list[str]) -> None:
+def normalize_accidentals(h: Hymn, warnings: list[str], guess: bool = True) -> None:
     """
     Revisión musical de los bemoles/sostenidos recolocados:
     - grafías imposibles en este tipo de himnos (E#, B#, Fb, Cb) → nota natural;
     - si una nota aparece casi siempre alterada en el himno (10×E♭ y 1×E),
-      la natural suelta se corrige.
+      la natural suelta se corrige (sólo con guess=True: en un PDF original las
+      alteraciones están en su sitio y estas «correcciones» romperían acordes
+      prestados como el F de «F G A» en La).
     """
     def root(ch: str) -> tuple[str, str]:
         m = re.match(r'([A-G])([#b]?)', ch)
@@ -557,7 +571,7 @@ def normalize_accidentals(h: Hymn, warnings: list[str]) -> None:
             if letter and letter + acc not in INVALID:
                 counts[letter][acc] += 1
     fixes: dict[str, str] = {}
-    for letter, c in counts.items():
+    for letter, c in (counts.items() if guess else []):
         for acc in ('b', '#'):
             if c[acc] >= 2 and c[acc] >= 2 * c[''] and c[''] > 0:
                 fixes[letter] = acc
@@ -575,7 +589,7 @@ def normalize_accidentals(h: Hymn, warnings: list[str]) -> None:
             new = INVALID[letter + acc] + rest
         elif acc == '' and letter in fixes:
             new = letter + fixes[letter] + rest
-        elif acc and loose(ch) and counts[letter][''] >= 3 and counts[letter][acc] <= max(1, counts[letter][''] // 4):
+        elif guess and acc and loose(ch) and counts[letter][''] >= 3 and counts[letter][acc] <= max(1, counts[letter][''] // 4):
             new = letter + rest  # signo suelto mal asignado: la nota va natural en todo el himno
         if new != clean:
             changes[f'{clean}→{new}'] += 1
@@ -710,16 +724,19 @@ def main():
     ap.add_argument('--id', required=True, help='identificador corto del himnario (p. ej. juvenil)')
     ap.add_argument('--nombre', required=True, help='nombre que verán los usuarios')
     ap.add_argument('--descripcion', default=None)
+    ap.add_argument('--original', action='store_true',
+                    help='PDF original (no salido de una conversión): acordes en su sitio, sin corregir desplazamientos '
+                         'ni adivinar alteraciones')
     ap.add_argument('--escala', type=float, default=0.85,
                     help='corrección del espaciado de los acordes (1 = tal cual; 0.85 va bien con PDFs salidos de Word)')
     args = ap.parse_args()
 
     warnings: list[str] = []
-    hymns = convert(args.pdf, warnings, args.escala)
+    hymns = convert(args.pdf, warnings, 1.0 if args.original else args.escala)
     args.salida.mkdir(parents=True, exist_ok=True)
     seen = collections.Counter(h.number for h in hymns)
     for h in hymns:
-        normalize_accidentals(h, warnings)
+        normalize_accidentals(h, warnings, guess=not args.original)
         if not any('[' in l for l in h.body):
             warnings.append(f'Himno {h.number} «{h.title}»: no se encontraron acordes')
         if seen[h.number] > 1:
