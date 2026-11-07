@@ -6,6 +6,7 @@
 #
 # Secretos necesarios (Settings → Secrets and variables → Actions):
 #   VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY   → datos de tu proyecto de Supabase
+#   (sin ellos, la app funciona en «modo demo»: sin cuentas, con himnarios importados en el teléfono)
 #   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD,
 #   ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD      → clave de firma (ver README)
 name: APK de Android
@@ -13,6 +14,7 @@ name: APK de Android
 on:
   workflow_dispatch:
   push:
+    branches: ['claude/music-hymn-app-f42pk4']
     tags: ['v*']
 
 permissions:
@@ -80,7 +82,16 @@ jobs:
           path: himnos.apk
 
       - name: Publicar en Releases
-        if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('v1.0.{0}', github.run_number) }}
+          name: Himnos y acordes ${{ github.ref_type == 'tag' && github.ref_name || format('1.0.{0}', github.run_number) }}
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+          body: |
+            Descarga **himnos.apk** (abajo, en «Assets») desde el teléfono Android y ábrelo para instalarlo.
+            Si el teléfono lo pide, permite «instalar apps de origen desconocido».
+
+            Enlace fijo a la última versión:
+            https://github.com/${{ github.repository }}/releases/latest/download/himnos.apk
           files: himnos.apk
